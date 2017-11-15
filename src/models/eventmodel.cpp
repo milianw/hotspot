@@ -116,14 +116,25 @@ QVariant EventModel::data(const QModelIndex& index, int role) const
             if (role == Qt::DisplayRole) {
                 return tr("%1 (#%2)").arg(thread.name, QString::number(thread.tid));
             } else if (role == Qt::ToolTipRole) {
-                return tr("Thread %1 (tid=%2, pid=%3) ran for %4 (%5% of total runtime).\n"
-                        "It produced %6 events (%7% of the total events).")
-                        .arg(thread.name, QString::number(thread.tid), QString::number(thread.pid),
-                             Util::formatTimeString(thread.timeEnd - thread.timeStart),
-                             Util::formatCostRelative(thread.timeEnd - thread.timeStart,
-                                                      m_maxTime - m_minTime),
-                             QString::number(thread.events.size()),
-                             Util::formatCostRelative(thread.events.size(), m_totalEvents));
+                if (thread.offCpuTime > 0) {
+                    return tr("Thread %1 (tid=%2, pid=%3) existed for %4 (%5% of total runtime).\n"
+                            "It produced %6 events (%7% of the total events).")
+                            .arg(thread.name, QString::number(thread.tid), QString::number(thread.pid),
+                                Util::formatTimeString(thread.timeEnd - thread.timeStart),
+                                Util::formatCostRelative(thread.timeEnd - thread.timeStart,
+                                                        m_maxTime - m_minTime),
+                                QString::number(thread.events.size()),
+                                Util::formatCostRelative(thread.events.size(), m_totalEvents));
+                } else {
+                    return tr("Thread %1 (tid=%2, pid=%3) existed for %4 (%5% of total runtime).\n"
+                            "It produced %6 events (%7% of the total events).")
+                            .arg(thread.name, QString::number(thread.tid), QString::number(thread.pid),
+                                Util::formatTimeString(thread.timeEnd - thread.timeStart),
+                                Util::formatCostRelative(thread.timeEnd - thread.timeStart,
+                                                        m_maxTime - m_minTime),
+                                QString::number(thread.events.size()),
+                                Util::formatCostRelative(thread.events.size(), m_totalEvents));
+                }
             }
             break;
         case EventsColumn:
